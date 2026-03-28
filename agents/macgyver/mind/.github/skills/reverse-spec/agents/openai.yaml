@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reverse"
+  short_description: "Extract product value from software artifacts."
+  default_prompt: "Use $reverse to analyze this software as a product and extract operator value, system capabilities, observable behavior, and implementation leakage."

@@ -1,0 +1,4 @@
+node_modules/
+
+# Runtime-generated canvas content
+data/content/
