@@ -1,0 +1,57 @@
+services:
+  macgyver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: macgyver-mind-host:local
+    env_file:
+      - .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      MIND_ROOT: /mind/live
+      LOCK_MIND_ROOT: "true"
+    volumes:
+      - type: bind
+        source: ./agents/macgyver/mind
+        target: /mind/live
+      - type: volume
+        source: copilot-session-state
+        target: /root/.copilot/session-state
+    ports:
+      - "${APP_HOST_PORT:-3000}:3000"
+      - "${DAPR_HTTP_HOST_PORT:-3500}:3500"
+
+  macgyver-dapr:
+    image: daprio/daprd:1.17.2
+    command:
+      - "./daprd"
+      - "--app-id"
+      - "macgyver"
+      - "--app-port"
+      - "3000"
+      - "--app-protocol"
+      - "http"
+      - "--app-channel-address"
+      - "127.0.0.1"
+      - "--resources-path"
+      - "/components"
+      - "--dapr-http-port"
+      - "3500"
+      - "--placement-host-address"
+      - " "
+      - "--scheduler-host-address"
+      - " "
+      - "--log-level"
+      - "info"
+    volumes:
+      - type: bind
+        source: ./platform/components
+        target: /components
+        read_only: true
+    depends_on:
+      - macgyver
+    network_mode: "service:macgyver"
+
+volumes:
+  copilot-session-state:

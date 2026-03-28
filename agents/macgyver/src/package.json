@@ -1,0 +1,12 @@
+{
+  "name": "macgyver-mind-host",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env index.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@github/copilot-sdk": "^0.2.0"
+  }
+}
