@@ -1,5 +1,7 @@
 import http from "node:http";
 import { RequestValidationError, runPrompt } from "./mind-session.mjs";
+import { findNewStars } from "./star-poller.mjs";
+import { processRepo } from "./spec-runner.mjs";
 
 export function createServer({ env = process.env, runner } = {}) {
   return http.createServer(async (req, res) => {
@@ -18,6 +20,13 @@ export function createServer({ env = process.env, runner } = {}) {
         const body = await readJson(req);
         const response = await runPrompt(body, env, runner);
         return sendJson(res, 200, response);
+      }
+
+      if (req.method === "POST" && url.pathname === "/jobs/check-stars") {
+        handleCheckStars(env).catch((error) => {
+          process.stderr.write(`[macgyver] check-stars error: ${error.message}\n`);
+        });
+        return sendJson(res, 200, { status: "accepted" });
       }
 
       return sendJson(res, 404, {
@@ -56,5 +65,28 @@ async function readJson(req) {
     return JSON.parse(text);
   } catch (error) {
     throw new RequestValidationError(`Invalid JSON request body: ${error.message}`);
+  }
+}
+
+async function handleCheckStars(env) {
+  const token = env.COPILOT_GITHUB_TOKEN ?? env.GITHUB_TOKEN ?? env.GH_TOKEN;
+  if (!token) {
+    process.stderr.write("[macgyver] no token available, skipping star check\n");
+    return;
+  }
+
+  const newStars = await findNewStars(token);
+  if (newStars.length === 0) {
+    return;
+  }
+
+  process.stdout.write(`[macgyver] found ${newStars.length} new star(s)\n`);
+
+  for (const repo of newStars) {
+    try {
+      await processRepo(repo, env);
+    } catch (error) {
+      process.stderr.write(`[macgyver] failed to process ${repo.full_name}: ${error.message}\n`);
+    }
   }
 }
