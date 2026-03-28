@@ -1,0 +1,9 @@
+# Dapr Multi-App Run File
+# https://docs.dapr.io/developing-applications/local-development/multi-app-dapr-run/
+version: 1
+apps:
+  - appID: macgyver
+    appDirPath: ./agents/macgyver/src/
+    appPort: 3000
+    daprHTTPPort: 3500
+    resourcesPath: ./components/
