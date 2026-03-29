@@ -13,6 +13,10 @@ param location string
 @description('GitHub token for MacGyver')
 param githubToken string
 
+@secure()
+@description('Copilot API token for llm-proxy')
+param copilotToken string
+
 @description('Mind repo to clone on boot')
 param mindRepo string = 'ianphil/faux-foundation'
 
@@ -21,6 +25,13 @@ param pollInterval string = '30s'
 
 @description('Copilot SDK response timeout in ms')
 param copilotResponseTimeoutMs string = '600000'
+
+@description('Entra ID app client ID for chat Easy Auth')
+param authClientId string
+
+@secure()
+@description('Entra ID app client secret for chat Easy Auth')
+param authClientSecret string
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
@@ -52,6 +63,18 @@ module containerAppsEnvironment './modules/container-apps-environment.bicep' = {
   }
 }
 
+module keyVault './modules/key-vault.bicep' = {
+  name: 'key-vault'
+  scope: rg
+  params: {
+    name: '${abbrs.keyVaultVaults}${resourceToken}'
+    location: location
+    tags: tags
+    copilotToken: copilotToken
+    githubToken: githubToken
+  }
+}
+
 module macgyver './modules/macgyver.bicep' = {
   name: 'macgyver'
   scope: rg
@@ -70,7 +93,39 @@ module macgyver './modules/macgyver.bicep' = {
   }
 }
 
+module llmProxy './modules/llm-proxy.bicep' = {
+  name: 'llm-proxy'
+  scope: rg
+  params: {
+    name: '${abbrs.appContainerApps}llm-proxy-${resourceToken}'
+    location: location
+    tags: tags
+    environmentId: containerAppsEnvironment.outputs.environmentId
+    imageName: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+    copilotToken: copilotToken
+    registryServer: containerRegistry.outputs.loginServer
+    registryName: containerRegistry.outputs.name
+  }
+}
+
+module chat './modules/chat.bicep' = {
+  name: 'chat'
+  scope: rg
+  params: {
+    name: '${abbrs.appContainerApps}chat-${resourceToken}'
+    location: location
+    tags: tags
+    environmentId: containerAppsEnvironment.outputs.environmentId
+    imageName: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+    registryServer: containerRegistry.outputs.loginServer
+    registryName: containerRegistry.outputs.name
+    authClientId: authClientId
+    authClientSecret: authClientSecret
+  }
+}
+
 output AZURE_RESOURCE_GROUP string = rg.name
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_CONTAINER_APP_NAME string = macgyver.outputs.name
 output AZURE_CONTAINER_APP_FQDN string = macgyver.outputs.fqdn
+output CHAT_FQDN string = chat.outputs.fqdn

@@ -6,7 +6,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${LLM_PROXY_PORT:-5100}:5100"
+      - "127.0.0.1:${LLM_PROXY_PORT:-5100}:5100"
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:5100/health"]
       interval: 30s
@@ -79,7 +79,7 @@ services:
       - "--resources-path"
       - "/components-dev"
       - "--dapr-http-port"
-      - "3501"
+      - "3500"
       - "--placement-host-address"
       - " "
       - "--scheduler-host-address"

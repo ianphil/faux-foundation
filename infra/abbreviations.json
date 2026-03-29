@@ -3,5 +3,6 @@
   "appManagedEnvironments": "cae-",
   "appContainerApps": "ca-",
   "operationalInsightsWorkspaces": "log-",
-  "containerRegistryRegistries": "cr"
+  "containerRegistryRegistries": "cr",
+  "keyVaultVaults": "kv-"
 }

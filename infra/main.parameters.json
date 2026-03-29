@@ -9,6 +9,9 @@
     "githubToken": {
       "value": "${GITHUB_TOKEN}"
     },
+    "copilotToken": {
+      "value": "${COPILOT_TOKEN}"
+    },
     "mindRepo": {
       "value": "${MIND_REPO=ianphil/faux-foundation}"
     },
@@ -17,6 +20,12 @@
     },
     "copilotResponseTimeoutMs": {
       "value": "${COPILOT_RESPONSE_TIMEOUT_MS=600000}"
+    },
+    "authClientId": {
+      "value": "${AUTH_CLIENT_ID=}"
+    },
+    "authClientSecret": {
+      "value": "${AUTH_CLIENT_SECRET=}"
     }
   }
 }

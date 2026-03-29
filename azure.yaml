@@ -9,3 +9,17 @@ services:
     docker:
       path: ./Dockerfile
       context: .
+  llm-proxy:
+    host: containerapp
+    language: csharp
+    project: ../copilot-llm-svc
+    docker:
+      path: ./Dockerfile
+      context: .
+  chat:
+    host: containerapp
+    language: js
+    project: ./apps/chat
+    docker:
+      path: ./Dockerfile
+      context: .
