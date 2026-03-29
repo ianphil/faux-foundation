@@ -1,0 +1,15 @@
+services:
+  llm-proxy:
+    build:
+      context: ../copilot-llm-svc
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${LLM_PROXY_PORT:-5100}:5100"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5100/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
