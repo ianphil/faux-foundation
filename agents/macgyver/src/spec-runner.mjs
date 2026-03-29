@@ -44,16 +44,12 @@ export async function processRepo(repo, env = process.env) {
 
 function buildPrompt(fullName, cloneDir) {
   return [
-    `Use the reverse-spec skill to analyze the codebase at ${cloneDir}.`,
-    `The target repo is ${fullName}.`,
+    `Hey Mac — new repo just came in. ${fullName} is cloned at ${cloneDir}.`,
     "",
-    "Read the code, docs, tests, README, and CI config.",
-    "Produce a complete product-level specification following the reverse-spec format:",
-    "Problem Statement, Actors & Goals, Operator Value, Core Capabilities,",
-    "Observable Behaviors, Edge Cases, Non-Functional Constraints, Non-Goals,",
-    "Suspected Implementation Leakage.",
+    "Use the reverse skill to analyze it. Read the code, docs, tests, README, CI config —",
+    "the whole thing. Then write the spec in your voice, the way you'd explain it to a friend.",
     "",
-    "Return ONLY the markdown spec content. No preamble, no commentary.",
+    "Return the markdown spec content and nothing else.",
   ].join("\n");
 }
 
