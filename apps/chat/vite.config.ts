@@ -11,4 +11,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      // Dev mode: bypass Dapr, hit llm-proxy directly
+      "/v1.0/invoke/llm-proxy/method": {
+        target: "http://localhost:5100",
+        changeOrigin: true,
+        rewrite: (path) => path.replace("/v1.0/invoke/llm-proxy/method", ""),
+      },
+    },
+  },
 })

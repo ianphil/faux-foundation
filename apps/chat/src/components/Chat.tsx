@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -134,18 +136,22 @@ export function Chat() {
               key={i}
               className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              <div
-                className={`max-w-[80%] rounded-lg px-4 py-2 whitespace-pre-wrap ${
-                  msg.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground"
-                }`}
-              >
-                {msg.content}
-                {isStreaming && i === messages.length - 1 && msg.role === "assistant" && (
-                  <span className="ml-1 inline-block animate-pulse">▊</span>
-                )}
-              </div>
+              {msg.role === "user" ? (
+                <div className="max-w-[80%] rounded-lg bg-primary px-4 py-2 whitespace-pre-wrap text-primary-foreground">
+                  {msg.content}
+                </div>
+              ) : (
+                <div className="max-w-[80%] rounded-lg bg-muted px-4 py-3 text-foreground">
+                  <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none [&_pre]:overflow-x-auto [&_pre]:rounded-md [&_pre]:bg-background/50 [&_pre]:p-3 [&_code]:rounded [&_code]:bg-background/50 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.85em] [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_p]:leading-relaxed [&_p:last-child]:mb-0 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_blockquote]:border-l-2 [&_blockquote]:border-muted-foreground/30 [&_blockquote]:pl-4 [&_blockquote]:italic [&_table]:text-sm [&_th]:px-3 [&_th]:py-1.5 [&_td]:px-3 [&_td]:py-1.5 [&_hr]:border-border">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {msg.content}
+                    </ReactMarkdown>
+                  </div>
+                  {isStreaming && i === messages.length - 1 && (
+                    <span className="ml-1 inline-block animate-pulse text-muted-foreground">▊</span>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
