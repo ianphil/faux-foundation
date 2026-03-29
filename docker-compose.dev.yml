@@ -8,11 +8,96 @@ services:
     ports:
       - "${LLM_PROXY_PORT:-5100}:5100"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5100/health"]
+      test: ["CMD", "curl", "-sf", "http://localhost:5100/health"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
+
+  llm-proxy-dapr:
+    image: daprio/daprd:1.17.2
+    command:
+      - "./daprd"
+      - "--app-id"
+      - "llm-proxy"
+      - "--app-port"
+      - "5100"
+      - "--app-protocol"
+      - "http"
+      - "--app-channel-address"
+      - "127.0.0.1"
+      - "--resources-path"
+      - "/components"
+      - "--resources-path"
+      - "/components-dev"
+      - "--dapr-http-port"
+      - "3510"
+      - "--placement-host-address"
+      - " "
+      - "--scheduler-host-address"
+      - " "
+      - "--log-level"
+      - "info"
+    volumes:
+      - type: bind
+        source: ./platform/components
+        target: /components
+        read_only: true
+      - type: bind
+        source: ./platform/components-dev
+        target: /components-dev
+        read_only: true
+    depends_on:
+      llm-proxy:
+        condition: service_healthy
+    network_mode: "service:llm-proxy"
+
+  chat:
+    build:
+      context: ./apps/chat
+      dockerfile: Dockerfile
+    ports:
+      - "${CHAT_PORT:-8080}:8080"
+    depends_on:
+      llm-proxy:
+        condition: service_healthy
+
+  chat-dapr:
+    image: daprio/daprd:1.17.2
+    command:
+      - "./daprd"
+      - "--app-id"
+      - "chat"
+      - "--app-port"
+      - "8080"
+      - "--app-protocol"
+      - "http"
+      - "--app-channel-address"
+      - "127.0.0.1"
+      - "--resources-path"
+      - "/components"
+      - "--resources-path"
+      - "/components-dev"
+      - "--dapr-http-port"
+      - "3501"
+      - "--placement-host-address"
+      - " "
+      - "--scheduler-host-address"
+      - " "
+      - "--log-level"
+      - "info"
+    volumes:
+      - type: bind
+        source: ./platform/components
+        target: /components
+        read_only: true
+      - type: bind
+        source: ./platform/components-dev
+        target: /components-dev
+        read_only: true
+    depends_on:
+      - chat
+    network_mode: "service:chat"
 
   macgyver-dapr:
     volumes:
