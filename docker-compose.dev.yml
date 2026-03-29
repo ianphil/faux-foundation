@@ -100,6 +100,7 @@ services:
     network_mode: "service:chat"
 
   macgyver-dapr:
+    image: daprio/daprd:1.17.2
     volumes:
       - type: bind
         source: ./platform/components-dev
@@ -127,3 +128,54 @@ services:
       - " "
       - "--log-level"
       - "info"
+
+  tool-service:
+    build:
+      context: ./apps/tools
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:${TOOL_SERVICE_PORT:-3100}:3100"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3100/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  tool-service-dapr:
+    image: daprio/daprd:1.17.2
+    command:
+      - "./daprd"
+      - "--app-id"
+      - "tool-service"
+      - "--app-port"
+      - "3100"
+      - "--app-protocol"
+      - "http"
+      - "--app-channel-address"
+      - "127.0.0.1"
+      - "--resources-path"
+      - "/components"
+      - "--resources-path"
+      - "/components-dev"
+      - "--dapr-http-port"
+      - "3500"
+      - "--placement-host-address"
+      - " "
+      - "--scheduler-host-address"
+      - " "
+      - "--log-level"
+      - "info"
+    volumes:
+      - type: bind
+        source: ./platform/components
+        target: /components
+        read_only: true
+      - type: bind
+        source: ./platform/components-dev
+        target: /components-dev
+        read_only: true
+    depends_on:
+      tool-service:
+        condition: service_healthy
+    network_mode: "service:tool-service"
