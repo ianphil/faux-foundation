@@ -64,6 +64,8 @@ module containerAppsEnvironment './modules/container-apps-environment.bicep' = {
     location: location
     tags: tags
     customDomainName: chatCustomDomain
+    stateStoreAccountName: storageAccount.outputs.name
+    stateStoreAccountKey: storageAccount.outputs.accountKey
   }
 }
 
@@ -76,6 +78,16 @@ module keyVault './modules/key-vault.bicep' = {
     tags: tags
     copilotToken: copilotToken
     githubToken: githubToken
+  }
+}
+
+module storageAccount './modules/storage-account.bicep' = {
+  name: 'storage-account'
+  scope: rg
+  params: {
+    name: '${abbrs.storageStorageAccounts}${resourceToken}'
+    location: location
+    tags: tags
   }
 }
 

@@ -4,5 +4,6 @@
   "appContainerApps": "ca-",
   "operationalInsightsWorkspaces": "log-",
   "containerRegistryRegistries": "cr",
-  "keyVaultVaults": "kv-"
+  "keyVaultVaults": "kv-",
+  "storageStorageAccounts": "st"
 }
