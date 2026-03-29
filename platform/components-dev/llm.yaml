@@ -8,6 +8,6 @@ spec:
   - name: key
     value: "proxy-managed"
   - name: model
-    value: "gpt-5.4-mini"
+    value: "claude-opus-4.6"
   - name: endpoint
     value: "http://llm-proxy:5100/v1"
