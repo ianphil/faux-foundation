@@ -9,12 +9,7 @@ services:
     environment:
       HOST: 0.0.0.0
       PORT: 3000
-      MIND_ROOT: /mind/live
-      LOCK_MIND_ROOT: "true"
     volumes:
-      - type: bind
-        source: ./agents/macgyver/mind
-        target: /mind/live
       - type: volume
         source: copilot-session-state
         target: /root/.copilot/session-state

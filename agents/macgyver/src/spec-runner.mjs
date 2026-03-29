@@ -61,7 +61,7 @@ function commitSpec(mindRoot, fullName) {
   const opts = { cwd: mindRoot, stdio: "pipe", timeout: 30_000 };
 
   try {
-    execFileSync("git", ["add", "expertise/"], opts);
+    execFileSync("git", ["add", "expertise/", ".working-memory/known-stars.json"], opts);
     execFileSync("git", ["commit", "-m", `feat: reverse-spec ${fullName}`], opts);
     execFileSync("git", ["push"], { ...opts, timeout: 60_000 });
     process.stdout.write(`[macgyver] committed and pushed spec for ${fullName}\n`);
