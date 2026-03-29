@@ -33,6 +33,9 @@ param authClientId string
 @description('Entra ID app client secret for chat Easy Auth')
 param authClientSecret string
 
+@description('Custom domain for chat app (e.g., chat.ianp.io)')
+param chatCustomDomain string = ''
+
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
@@ -60,6 +63,7 @@ module containerAppsEnvironment './modules/container-apps-environment.bicep' = {
     name: '${abbrs.appManagedEnvironments}${resourceToken}'
     location: location
     tags: tags
+    customDomainName: chatCustomDomain
   }
 }
 
@@ -121,6 +125,8 @@ module chat './modules/chat.bicep' = {
     registryName: containerRegistry.outputs.name
     authClientId: authClientId
     authClientSecret: authClientSecret
+    customDomainName: chatCustomDomain
+    customDomainCertId: containerAppsEnvironment.outputs.chatCertId
   }
 }
 

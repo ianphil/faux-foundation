@@ -25,6 +25,12 @@ param authClientId string
 @description('Entra ID app client secret for Easy Auth')
 param authClientSecret string
 
+@description('Custom domain hostname (e.g., chat.ianp.io). Leave empty to skip.')
+param customDomainName string = ''
+
+@description('Managed certificate resource ID for custom domain')
+param customDomainCertId string = ''
+
 resource acr 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: registryName
 }
@@ -47,6 +53,13 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         external: true
         targetPort: 8080
         transport: 'http'
+        customDomains: !empty(customDomainName) && !empty(customDomainCertId) ? [
+          {
+            name: customDomainName
+            certificateId: customDomainCertId
+            bindingType: 'SniEnabled'
+          }
+        ] : []
       }
       registries: [
         {

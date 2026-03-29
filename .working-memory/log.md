@@ -10,3 +10,5 @@
 - container-apps: Dapr 1.13.6 in Container Apps does NOT support conversation.openai component type (added in 1.15). Deploying it causes fatal sidecar error.
 - container-apps: Scale-to-zero (minReplicas: 0) caused KEDA deactivation on chat app. Set minReplicas: 1 for reliability.
 - azd: language: docker doesn't work for azd packaging. Use actual language (js, csharp) with project: field pointing to source directory.
+- custom-domain: Container Apps managed certificates have a chicken-and-egg problem — cert needs hostname on app, app needs cert ID. Must bootstrap via CLI (hostname add → hostname bind), then reference the existing cert in Bicep with `existing` keyword for steady state.
+- custom-domain: Container Apps requires a TXT record at `asuid.<subdomain>` with a verification ID, even when CNAME is already pointing correctly. Both DNS records needed.

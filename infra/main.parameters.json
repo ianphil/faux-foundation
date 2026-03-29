@@ -26,6 +26,9 @@
     },
     "authClientSecret": {
       "value": "${AUTH_CLIENT_SECRET=}"
+    },
+    "chatCustomDomain": {
+      "value": "${CHAT_CUSTOM_DOMAIN=}"
     }
   }
 }

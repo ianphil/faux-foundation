@@ -6,6 +6,9 @@ param location string
 
 param tags object = {}
 
+@description('Custom domain hostname (e.g., chat.ianp.io). Leave empty to skip.')
+param customDomainName string = ''
+
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: '${name}-logs'
   location: location
@@ -32,6 +35,11 @@ resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   }
 }
 
+resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' existing = if (!empty(customDomainName)) {
+  parent: environment
+  name: 'mc-cae-2limhnlrdo-chat-ianp-io-1645'
+}
+
 // NOTE: conversation.openai requires Dapr 1.15+
 // Container Apps currently runs Dapr 1.13.6 which does NOT support this component type.
 // Uncomment when Container Apps upgrades its Dapr runtime.
@@ -52,3 +60,4 @@ resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
 
 output environmentId string = environment.id
 output environmentName string = environment.name
+output chatCertId string = !empty(customDomainName) ? managedCert.id : ''
