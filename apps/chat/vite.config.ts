@@ -19,6 +19,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace("/v1.0/invoke/llm-proxy/method", ""),
       },
+      // Dev mode: state store via Dapr sidecar
+      "/v1.0/state": {
+        target: "http://localhost:3500",
+        changeOrigin: true,
+      },
     },
   },
 })
