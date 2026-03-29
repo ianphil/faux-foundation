@@ -1,0 +1,22 @@
+{
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "githubToken": {
+      "value": "${GITHUB_TOKEN}"
+    },
+    "mindRepo": {
+      "value": "${MIND_REPO=ianphil/faux-foundation}"
+    },
+    "pollInterval": {
+      "value": "${POLL_INTERVAL=30s}"
+    },
+    "copilotResponseTimeoutMs": {
+      "value": "${COPILOT_RESPONSE_TIMEOUT_MS=600000}"
+    }
+  }
+}
