@@ -4,8 +4,8 @@ import { runPrompt } from "./mind-session.mjs";
 import { cloneRepo, cleanupClone } from "./star-poller.mjs";
 
 export async function processRepo(repo, env = process.env) {
-  const owner = repo.owner?.login ?? repo.full_name.split("/")[0];
-  const name = repo.name ?? repo.full_name.split("/")[1];
+  const owner = path.basename(repo.owner?.login ?? repo.full_name.split("/")[0]);
+  const name = path.basename(repo.name ?? repo.full_name.split("/")[1]);
   const fullName = `${owner}/${name}`;
   const mindRoot = env.MIND_ROOT ?? path.resolve("../mind");
 

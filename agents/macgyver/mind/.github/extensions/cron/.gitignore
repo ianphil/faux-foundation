@@ -1,8 +1,0 @@
-node_modules/
-
-# Engine runtime state (any agent subdirectory)
-data/**/engine.lock
-data/**/engine.log
-
-# Run history is runtime state, not config
-data/**/history/
