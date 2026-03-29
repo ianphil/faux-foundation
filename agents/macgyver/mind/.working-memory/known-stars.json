@@ -258,6 +258,7 @@
     "flwrlabs/flower",
     "badlogic/lemmy",
     "casey/just",
-    "tealdeer-rs/tealdeer"
+    "tealdeer-rs/tealdeer",
+    "ianphil/faux-foundation"
   ]
 }
