@@ -13,3 +13,32 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+  macgyver-dapr:
+    volumes:
+      - type: bind
+        source: ./platform/components-dev
+        target: /components-dev
+        read_only: true
+    command:
+      - "./daprd"
+      - "--app-id"
+      - "macgyver"
+      - "--app-port"
+      - "3000"
+      - "--app-protocol"
+      - "http"
+      - "--app-channel-address"
+      - "127.0.0.1"
+      - "--resources-path"
+      - "/components"
+      - "--resources-path"
+      - "/components-dev"
+      - "--dapr-http-port"
+      - "3500"
+      - "--placement-host-address"
+      - " "
+      - "--scheduler-host-address"
+      - " "
+      - "--log-level"
+      - "info"

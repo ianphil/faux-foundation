@@ -1,0 +1,13 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: llm
+spec:
+  type: conversation.openai
+  metadata:
+  - name: key
+    value: "proxy-managed"
+  - name: model
+    value: "gpt-5.4-mini"
+  - name: endpoint
+    value: "http://llm-proxy:5100/v1"
