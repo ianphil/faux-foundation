@@ -94,6 +94,7 @@
     "NirDiamant/RAG_Techniques",
     "NirDiamant/Prompt_Engineering",
     "disler/aider-mcp-server",
-    "jplane/foundry-agents"
+    "jplane/foundry-agents",
+    "simonw/showboat"
   ]
 }
