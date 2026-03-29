@@ -257,6 +257,7 @@
     "volcengine/OpenViking",
     "flwrlabs/flower",
     "badlogic/lemmy",
-    "casey/just"
+    "casey/just",
+    "tealdeer-rs/tealdeer"
   ]
 }
