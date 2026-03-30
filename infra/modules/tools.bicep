@@ -57,10 +57,12 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'acr-password'
           value: acr.listCredentials().passwords[0].value
         }
-        {
-          name: 'bing-api-key'
-          value: bingApiKey
-        }
+        ...(!empty(bingApiKey) ? [
+          {
+            name: 'bing-api-key'
+            value: bingApiKey
+          }
+        ] : [])
       ]
     }
     template: {
@@ -74,7 +76,9 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           }
           env: [
             { name: 'PORT', value: '3100' }
-            { name: 'BING_API_KEY', secretRef: 'bing-api-key' }
+            ...(!empty(bingApiKey) ? [
+              { name: 'BING_API_KEY', secretRef: 'bing-api-key' }
+            ] : [])
           ]
           probes: [
             {
