@@ -19,8 +19,8 @@ param registryServer string
 param registryName string
 
 @secure()
-@description('Bing Search API key')
-param bingApiKey string = ''
+@description('Brave Search API key')
+param braveApiKey string = ''
 
 resource acr 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: registryName
@@ -57,10 +57,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'acr-password'
           value: acr.listCredentials().passwords[0].value
         }
-        ...(!empty(bingApiKey) ? [
+        ...(!empty(braveApiKey) ? [
           {
-            name: 'bing-api-key'
-            value: bingApiKey
+            name: 'brave-api-key'
+            value: braveApiKey
           }
         ] : [])
       ]
@@ -76,8 +76,8 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           }
           env: [
             { name: 'PORT', value: '3100' }
-            ...(!empty(bingApiKey) ? [
-              { name: 'BING_API_KEY', secretRef: 'bing-api-key' }
+            ...(!empty(braveApiKey) ? [
+              { name: 'BRAVE_API_KEY', secretRef: 'brave-api-key' }
             ] : [])
           ]
           probes: [

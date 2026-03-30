@@ -40,8 +40,8 @@ param authAllowedPrincipal string
 param chatCustomDomain string = ''
 
 @secure()
-@description('Bing Search API key for tool-service')
-param bingApiKey string = ''
+@description('Brave Search API key for tool-service')
+param braveApiKey string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
@@ -142,7 +142,7 @@ module tools './modules/tools.bicep' = {
     imageName: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
     registryServer: containerRegistry.outputs.loginServer
     registryName: containerRegistry.outputs.name
-    bingApiKey: bingApiKey
+    braveApiKey: braveApiKey
   }
 }
 

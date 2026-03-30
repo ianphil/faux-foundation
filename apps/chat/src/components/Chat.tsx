@@ -244,13 +244,31 @@ export function Chat({ conversationId, onConversationSaved }: ChatProps) {
     },
   }
 
+  const WEB_SEARCH_TOOL = {
+    type: "function" as const,
+    name: "web_search",
+    description: "Search the web using Brave Search. Use when the user asks a question that requires current information, wants to find something online, or you need to research a topic. Returns a list of relevant results with titles, URLs, and snippets.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "The search query" },
+        count: { type: "number", description: "Number of results to return (default 5, max 50)" },
+        freshness: { type: "string", description: "Filter by age: Day, Week, or Month" },
+      },
+      required: ["query"],
+    },
+  }
+
   const executeToolCalls = useCallback(async (toolCalls: ToolCall[]): Promise<Array<{ call_id: string; output: string }>> => {
     const results: Array<{ call_id: string; output: string }> = []
     for (const tc of toolCalls) {
       try {
         const args = JSON.parse(tc.arguments)
         const toolName = tc.name.replace(/_/g, "-")
-        dispatch({ type: "TOOL_STATUS", message: `🔍 Fetching ${args.url}…` })
+        const statusMsg = tc.name === "web_search"
+          ? `🔍 Searching "${args.query}"…`
+          : `🔍 Fetching ${args.url}…`
+        dispatch({ type: "TOOL_STATUS", message: statusMsg })
         const res = await fetch(`/v1.0/invoke/tool-service/method/tools/${toolName}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -311,7 +329,7 @@ export function Chat({ conversationId, onConversationSaved }: ChatProps) {
             model: state.model,
             input: currentInput,
             stream: true,
-            tools: [WEB_FETCH_TOOL],
+            tools: [WEB_FETCH_TOOL, WEB_SEARCH_TOOL],
           }),
         })
 

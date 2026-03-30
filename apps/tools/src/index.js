@@ -144,53 +144,54 @@ app.post("/tools/web-fetch", async (req, res) => {
   }
 });
 
-// ── Web Search (Bing) ──
+// ── Web Search (Brave) ──
 app.post("/tools/web-search", async (req, res) => {
-  const { query, count = 5, market = "en-US", freshness } = req.body;
+  const { query, count = 5, freshness } = req.body;
   if (!query) return res.status(400).json({ error: "query is required" });
 
-  const apiKey = process.env.BING_API_KEY;
+  const apiKey = process.env.BRAVE_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: "BING_API_KEY not configured" });
+    return res.status(500).json({ error: "BRAVE_API_KEY not configured" });
   }
 
-  console.log(`[web-search] "${query}" (count=${count}, market=${market})`);
+  console.log(`[web-search] "${query}" (count=${count})`);
 
   try {
     const params = new URLSearchParams({
       q: query,
       count: String(count),
-      mkt: market,
-      textDecorations: "false",
-      textFormat: "Raw",
     });
     if (freshness) params.set("freshness", freshness);
 
     const response = await fetch(
-      `https://api.bing.microsoft.com/v7.0/search?${params}`,
+      `https://api.search.brave.com/res/v1/web/search?${params}`,
       {
-        headers: { "Ocp-Apim-Subscription-Key": apiKey },
+        headers: {
+          "Accept": "application/json",
+          "Accept-Encoding": "gzip",
+          "X-Subscription-Token": apiKey,
+        },
         signal: AbortSignal.timeout(15_000),
       },
     );
 
     if (!response.ok) {
       const errText = await response.text();
-      throw new Error(`Bing API error (${response.status}): ${errText}`);
+      throw new Error(`Brave Search error (${response.status}): ${errText}`);
     }
 
     const data = await response.json();
-    const results = (data.webPages?.value ?? []).map((r) => ({
-      name: r.name,
+    const results = (data.web?.results ?? []).map((r) => ({
+      name: r.title,
       url: r.url,
-      snippet: r.snippet,
-      dateLastCrawled: r.dateLastCrawled,
+      snippet: r.description,
+      age: r.age,
     }));
 
     return res.json({
       query,
       results,
-      totalEstimatedMatches: data.webPages?.totalEstimatedMatches ?? 0,
+      totalEstimatedMatches: data.web?.totalEstimatedMatches ?? results.length,
     });
   } catch (err) {
     console.error(`[web-search] Error: ${err.message}`);
