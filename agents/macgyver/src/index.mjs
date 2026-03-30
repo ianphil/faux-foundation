@@ -24,7 +24,7 @@ function bootstrapMind() {
     return;
   }
 
-  const repo = process.env.MIND_REPO ?? "ianphil/faux-foundation";
+  const repo = process.env.MIND_REPO ?? "ianphil/macgyver";
   const token = process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
   if (!token) throw new Error("GITHUB_TOKEN required for mind clone");
 
@@ -36,7 +36,7 @@ function bootstrapMind() {
   execFileSync("git", ["config", "user.name", "MacGyver"], { cwd: repoDir });
   execFileSync("git", ["config", "user.email", "macgyver@faux-foundation.dev"], { cwd: repoDir });
 
-  process.env.MIND_ROOT = `${repoDir}/agents/macgyver/mind`;
+  process.env.MIND_ROOT = repoDir;
   process.stdout.write(`[macgyver] mind loaded at ${process.env.MIND_ROOT}\n`);
 }
 
