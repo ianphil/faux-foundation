@@ -9,7 +9,7 @@ RUN npm ci --omit=dev
 
 COPY agents/macgyver/src/*.mjs ./
 
-RUN groupadd -r app && useradd -r -g app -d /app app && chown -R app:app /app
+RUN mkdir -p /mind && groupadd -r app && useradd -r -g app -d /app app && chown -R app:app /app /mind
 USER app
 
 ENV HOST=0.0.0.0
