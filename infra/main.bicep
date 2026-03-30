@@ -127,6 +127,20 @@ module llmProxy './modules/llm-proxy.bicep' = {
   }
 }
 
+module tools './modules/tools.bicep' = {
+  name: 'tools'
+  scope: rg
+  params: {
+    name: '${abbrs.appContainerApps}tools-${resourceToken}'
+    location: location
+    tags: tags
+    environmentId: containerAppsEnvironment.outputs.environmentId
+    imageName: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+    registryServer: containerRegistry.outputs.loginServer
+    registryName: containerRegistry.outputs.name
+  }
+}
+
 module chat './modules/chat.bicep' = {
   name: 'chat'
   scope: rg

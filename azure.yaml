@@ -23,3 +23,10 @@ services:
     docker:
       path: ./Dockerfile
       context: .
+  tools:
+    host: containerapp
+    language: js
+    project: ./apps/tools
+    docker:
+      path: ./Dockerfile
+      context: .
