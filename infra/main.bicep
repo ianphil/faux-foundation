@@ -39,6 +39,10 @@ param authAllowedPrincipal string
 @description('Custom domain for chat app (e.g., chat.ianp.io)')
 param chatCustomDomain string = ''
 
+@secure()
+@description('Bing Search API key for tool-service')
+param bingApiKey string = ''
+
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
@@ -138,6 +142,7 @@ module tools './modules/tools.bicep' = {
     imageName: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
     registryServer: containerRegistry.outputs.loginServer
     registryName: containerRegistry.outputs.name
+    bingApiKey: bingApiKey
   }
 }
 

@@ -29,6 +29,9 @@
     },
     "chatCustomDomain": {
       "value": "${CHAT_CUSTOM_DOMAIN=}"
+    },
+    "bingApiKey": {
+      "value": "${BING_API_KEY=}"
     }
   }
 }
