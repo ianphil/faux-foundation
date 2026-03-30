@@ -1,5 +1,5 @@
-# Sync tokens into azd env before deploy.
-# Runs automatically as an azd predeploy hook.
+# Sync tokens into azd env before provision.
+# Runs automatically as an azd preprovision hook so Bicep gets fresh secrets.
 #
 # GITHUB_TOKEN  — from gh CLI (stars, cloning, pushing)
 # COPILOT_TOKEN — from Windows Credential Manager (LLM API access)
