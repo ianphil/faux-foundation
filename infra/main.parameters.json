@@ -27,6 +27,9 @@
     "authClientSecret": {
       "value": "${AUTH_CLIENT_SECRET=}"
     },
+    "authAllowedPrincipal": {
+      "value": "${AUTH_ALLOWED_PRINCIPAL=}"
+    },
     "chatCustomDomain": {
       "value": "${CHAT_CUSTOM_DOMAIN=}"
     },
