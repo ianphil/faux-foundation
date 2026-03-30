@@ -33,6 +33,9 @@ param authClientId string
 @description('Entra ID app client secret for chat Easy Auth')
 param authClientSecret string
 
+@description('Allowed principal object ID for chat Easy Auth')
+param authAllowedPrincipal string
+
 @description('Custom domain for chat app (e.g., chat.ianp.io)')
 param chatCustomDomain string = ''
 
@@ -137,6 +140,7 @@ module chat './modules/chat.bicep' = {
     registryName: containerRegistry.outputs.name
     authClientId: authClientId
     authClientSecret: authClientSecret
+    authAllowedPrincipal: authAllowedPrincipal
     customDomainName: chatCustomDomain
     customDomainCertId: containerAppsEnvironment.outputs.chatCertId
   }

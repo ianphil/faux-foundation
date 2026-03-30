@@ -25,6 +25,42 @@ platform/                → Shared Dapr config (state, secrets, components)
 - **Trigger:** Poll `GET /user/starred?sort=created` (GitHub App as graduation path)
 - **Spec format:** Product-level reverse specs via [reverse](https://github.com/ianphil/reverse) skill
 
+## Apps
+
+| App | Path | Description |
+|-----|------|-------------|
+| **Chat** | `apps/chat/` | React + Vite chat UI served via nginx |
+| **Tools** | `apps/tools/` | Tool service for agentic `web_fetch` and other capabilities |
+
+## External Dependencies
+
+| Dependency | Local Path | Repo |
+|-----------|------------|------|
+| **copilot-llm-svc** | `../copilot-llm-svc` | [copilot-llm-svc](https://github.com/ianphil_microsoft/copilot-llm-svc) |
+
+Referenced by both `docker-compose.dev.yml` (build context) and `azure.yaml` (azd service).
+
+## Local Development
+
+Base compose (`docker-compose.yml`) runs macgyver + Dapr sidecar. The dev overlay (`docker-compose.dev.yml`) adds llm-proxy, chat, tool-service, and their Dapr sidecars.
+
+```bash
+# Run everything locally
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+## Deployment
+
+Azure Container Apps via `azd`. Three services: `macgyver`, `llm-proxy`, `chat`.
+
+```bash
+azd env list                      # show environments (default: dev)
+azd deploy                        # deploy all services
+azd deploy llm-proxy chat         # deploy specific services
+```
+
+Infrastructure is defined in `infra/` (Bicep). Use `azd up` only when infra changes are needed.
+
 ## Agents
 
 | Agent | Persona | Job |

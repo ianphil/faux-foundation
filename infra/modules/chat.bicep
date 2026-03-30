@@ -25,6 +25,9 @@ param authClientId string
 @description('Entra ID app client secret for Easy Auth')
 param authClientSecret string
 
+@description('Allowed principal object ID for Easy Auth')
+param authAllowedPrincipal string
+
 @description('Custom domain hostname (e.g., chat.ianp.io). Leave empty to skip.')
 param customDomainName string = ''
 
@@ -108,6 +111,11 @@ resource authConfig 'Microsoft.App/containerApps/authConfigs@2024-03-01' = {
     globalValidation: {
       unauthenticatedClientAction: 'RedirectToLoginPage'
       redirectToProvider: 'azureactivedirectory'
+      allowedPrincipals: {
+        identities: [
+          authAllowedPrincipal
+        ]
+      }
     }
     identityProviders: {
       azureActiveDirectory: {
