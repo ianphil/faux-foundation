@@ -1,0 +1,55 @@
+# Dapr Multi-App Run File
+# https://docs.dapr.io/developing-applications/local-development/multi-app-dapr-run/
+#
+# Process mode (daily driver):  .\scripts\dev.ps1
+# Kind mode (container validation):  .\scripts\dev.ps1 -Kind
+#
+# Uses ${VAR} placeholders for secrets — dev.ps1 substitutes them from
+# azd env before passing to Dapr. Non-sensitive defaults are inline.
+version: 1
+common:
+  resourcesPath: ./platform/components
+apps:
+  - appID: macgyver
+    appDirPath: ./agents/macgyver/src/
+    appPort: 3000
+    command: ["node", "--env-file-if-exists=.env", "index.mjs"]
+    containerImage: faux-foundation/macgyver:dev
+    containerImagePullPolicy: IfNotPresent
+    createService: true
+    env:
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+      MIND_REPO: "ianphil/macgyver"
+      POLL_INTERVAL: "30s"
+      COPILOT_RESPONSE_TIMEOUT_MS: "600000"
+
+  - appID: llm-proxy
+    appDirPath: ../copilot-llm-svc/
+    appPort: 5100
+    command: ["dotnet", "run"]
+    containerImage: faux-foundation/llm-proxy:dev
+    containerImagePullPolicy: IfNotPresent
+    createService: true
+    env:
+      COPILOT_TOKEN: "${COPILOT_TOKEN}"
+
+  - appID: tool-service
+    appDirPath: ./apps/tools/
+    appPort: 3100
+    command: ["node", "src/index.js"]
+    containerImage: faux-foundation/tools:dev
+    containerImagePullPolicy: IfNotPresent
+    createService: true
+    env:
+      BRAVE_API_KEY: "${BRAVE_API_KEY}"
+
+  - appID: chat
+    appDirPath: ./apps/chat/
+    appPort: 8080
+    daprHTTPPort: 3500
+    command: ["npx", "vite"]
+    containerImage: faux-foundation/chat:dev
+    containerImagePullPolicy: IfNotPresent
+    createService: true

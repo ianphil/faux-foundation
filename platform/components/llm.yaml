@@ -10,4 +10,4 @@ spec:
   - name: model
     value: "claude-opus-4.6"
   - name: endpoint
-    value: "http://llm-proxy:5100/v1"
+    value: "http://localhost:5100/v1"

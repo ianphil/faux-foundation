@@ -12,6 +12,7 @@ export default defineConfig({
     },
   },
   server: {
+    port: 8080,
     proxy: {
       // Dev mode: bypass Dapr, hit llm-proxy directly
       "/v1.0/invoke/llm-proxy/method": {
