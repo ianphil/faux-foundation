@@ -41,10 +41,6 @@ if ($Kind) {
     $tmpYaml = Join-Path $env:TEMP "dapr-resolved.yaml"
     [IO.File]::WriteAllText($tmpYaml, $resolved)
 
-    # Apply Dapr components to the Kind cluster
-    Write-Host "Applying Dapr components to Kind cluster..." -ForegroundColor Cyan
-    kubectl apply -f ./platform/components/ --context kind-faux-foundation
-
     Write-Host "Starting in Kind mode (container validation)..." -ForegroundColor Yellow
     # Start dapr in background so we can set up port-forwarding
     $daprProc = Start-Process -PassThru -NoNewWindow dapr -ArgumentList "run -k --run-file $tmpYaml"
