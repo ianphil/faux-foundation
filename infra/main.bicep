@@ -18,7 +18,7 @@ param githubToken string
 param copilotToken string
 
 @description('Mind repo to clone on boot')
-param mindRepo string = 'ianphil/faux-foundation'
+param mindRepo string = 'ianphil/macgyver'
 
 @description('Star poll interval')
 param pollInterval string = '30s'

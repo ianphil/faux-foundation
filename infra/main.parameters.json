@@ -13,7 +13,7 @@
       "value": "${COPILOT_TOKEN}"
     },
     "mindRepo": {
-      "value": "${MIND_REPO=ianphil/faux-foundation}"
+      "value": "${MIND_REPO=ianphil/macgyver}"
     },
     "pollInterval": {
       "value": "${POLL_INTERVAL=30s}"
