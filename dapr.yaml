@@ -22,13 +22,14 @@ apps:
       PORT: "3000"
       GITHUB_TOKEN: "${GITHUB_TOKEN}"
       MIND_REPO: "ianphil/macgyver"
+      MIND_ROOT: "${MIND_ROOT}"
       POLL_INTERVAL: "30s"
       COPILOT_RESPONSE_TIMEOUT_MS: "600000"
 
   - appID: llm-proxy
     appDirPath: ../copilot-llm-svc/
     appPort: 5100
-    command: ["dotnet", "run"]
+    command: ["dotnet", "run", "--project", "src/llm-svc"]
     containerImage: faux-foundation/llm-proxy:dev
     containerImagePullPolicy: IfNotPresent
     createService: true

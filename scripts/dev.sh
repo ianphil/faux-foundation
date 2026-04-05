@@ -19,19 +19,43 @@ while IFS='=' read -r name value; do
 done < <(azd env get-values)
 echo -e "\033[32mEnvironment loaded.\033[0m"
 
-# Resolve ${VAR} placeholders in dapr.yaml with actual env values
-resolve_vars() {
-    local content
-    content=$(<dapr.yaml)
-    while [[ "$content" =~ \$\{([A-Za-z_][A-Za-z0-9_]*)\} ]]; do
-        local var="${BASH_REMATCH[1]}"
-        local val="${!var:-\$\{$var\}}"
-        content="${content//\$\{$var\}/$val}"
-    done
-    printf '%s' "$content"
-}
+# Resolve COPILOT_TOKEN from Linux Secret Service (mirrors copilot-llm-svc approach)
+if [[ -z "${COPILOT_TOKEN:-}" ]]; then
+    if command -v secret-tool >/dev/null 2>&1; then
+        echo -e "\033[36mReading Copilot token from Secret Service...\033[0m"
+        token="$(secret-tool lookup service copilot-cli 2>/dev/null || true)"
+        if [[ -n "$token" ]]; then
+            export COPILOT_TOKEN="$token"
+            echo -e "\033[32mCopilot token loaded (${token:0:8}...)\033[0m"
+        else
+            echo -e "\033[33mNo copilot-cli credential found in Secret Service. Run Copilot CLI /login first.\033[0m"
+        fi
+    else
+        echo -e "\033[33mInstall libsecret-tools for automatic Copilot token resolution.\033[0m"
+    fi
+fi
 
-resolved="$(resolve_vars)"
+# Resolve ${VAR} placeholders in dapr.yaml with actual env values
+resolved="$(python3 <<'PYEOF'
+import re, os
+with open('dapr.yaml') as f:
+    content = f.read()
+def repl(m):
+    return os.environ.get(m.group(1), m.group(0))
+print(re.sub(r'\$\{(\w+)\}', repl, content), end='')
+PYEOF
+)"
+
+APP_IDS=(macgyver llm-proxy tool-service chat)
+
+cleanup() {
+    echo -e "\n\033[36mStopping Dapr apps...\033[0m"
+    for app in "${APP_IDS[@]}"; do
+        dapr stop --app-id "$app" 2>/dev/null && \
+            echo -e "  \033[32m✓ $app\033[0m" || true
+    done
+}
+trap cleanup EXIT INT TERM
 
 if $KIND; then
     # Clean stale deploy manifests so Dapr regenerates with new env values
@@ -46,11 +70,12 @@ if $KIND; then
     tmp_yaml="$(mktemp /tmp/dapr-resolved-XXXXXX.yaml)"
     printf '%s' "$resolved" > "$tmp_yaml"
 
-    cleanup() {
+    kind_cleanup() {
         [[ -n "${port_forward_pid:-}" ]] && kill "$port_forward_pid" 2>/dev/null || true
         rm -f "$tmp_yaml"
+        cleanup
     }
-    trap cleanup EXIT
+    trap kind_cleanup EXIT INT TERM
 
     echo -e "\033[33mStarting in Kind mode (container validation)...\033[0m"
     dapr run -k --run-file "$tmp_yaml" &

@@ -9,6 +9,11 @@
 
 ## 2026-04-05
 - dapr: `dapr init` required on Linux — pulls sidecar, Redis, Zipkin, scheduler containers. Runtime installs to `~/.dapr/bin`.
+- dapr: `dapr stop --app-id <ID>` is the clean way to stop apps. `--run-file` doesn't work when YAML is piped via stdin.
+- dapr: stale daprd/app processes from killed runs hold ports — cleanup trap in dev.sh prevents this.
 - dev-script: `dev.ps1` is PowerShell-only; `dev.sh` added as bash equivalent for Linux. Both resolve `${VAR}` placeholders in `dapr.yaml` from `azd env get-values`.
+- dev-script: bash `"$(...)"` eats backslashes in Python regex — use heredoc (`<<'PYEOF'`) for inline Python to preserve `\$` patterns.
+- llm-proxy: repo restructured to `src/llm-svc/` layout — dapr.yaml command needs `--project src/llm-svc`.
 - llm-proxy: `azure.yaml` builds llm-proxy from source via `../copilot-llm-svc/Dockerfile` — no pinned image tags, so version bumps deploy automatically on `azd up`.
+- credentials: `GITHUB_TOKEN` comes from `gh auth token`, stored in azd env. `COPILOT_TOKEN` comes from Linux Secret Service via `secret-tool lookup service copilot-cli`.
 - deps: `apps/chat/` and `apps/tools/` need `npm install` after fresh clone — `node_modules` are not checked in.
